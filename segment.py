@@ -1,13 +1,13 @@
+import functools
+
 import cv2
 import numpy as np
 
-from boundary import find_iris_inner_bound, find_iris_outer_bound
 
-
-def segment_iris(img, inner_center, inner_radius, outer_center, outer_radius):
+def segment_iris(img, inner_center, inner_radius, outer_center, outer_radius, eyelids):
     """
     INPUT:
-        img -- graysacale image as np.array()
+        img - graysacale image as np.array()
         inner_center - (x,y) coordinates of pupil circle
         inner_radius - radius of pupil circle
         outer_center - (x, y) coordinates of iris circle
@@ -15,16 +15,13 @@ def segment_iris(img, inner_center, inner_radius, outer_center, outer_radius):
     OUTPUT:
         segmented_img - image of the iris only
     """
-    inner_center, inner_radius = find_iris_inner_bound(img)
-    outer_center, outer_radius = find_iris_outer_bound(
-        img, inner_center, inner_radius)
+    empty = np.zeros(img.shape, np.uint8)
 
-    mask = np.zeros(img.shape, np.uint8)
-    cv2.circle(mask, outer_center, outer_radius, 255, thickness=-1)
+    masks = [cv2.circle(empty.copy(), (i[0], i[1]), i[2], 255, thickness=-1) for i in eyelids]
+    masks.append(cv2.circle(empty.copy(), outer_center, outer_radius, 255, thickness=-1))
+
+    mask = functools.reduce(lambda a, b: np.bitwise_and(a, b), masks)
+
     cv2.circle(mask, inner_center, inner_radius, 0, thickness=-1)
-    segmented_img = np.bitwise_and(img, mask)
 
-    #segmented_img = segmented_img[(outer_center[1] - outer_radius): (outer_center[1] + outer_radius + 1),
-    #                              (outer_center[0] - outer_radius): (outer_center[0] + outer_radius + 1)]
-
-    return segmented_img
+    return np.bitwise_and(img, mask)

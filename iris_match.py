@@ -7,7 +7,7 @@ import numpy as np
 from boundary import find_iris_inner_bound, find_iris_outer_bound
 from segment import segment_iris
 from unwrap import unwrap_iris
-from extract_feature import extractFeature
+from extract_feature import extract_features
 
 root = tk.Tk()
 root.withdraw()
@@ -25,7 +25,7 @@ segmented_img = segment_iris(
 unwrapped_img = unwrap_iris(
     segmented_img, inner_center, inner_radius, outer_center, outer_radius)
 
-iris_code_1 = extractFeature(unwrapped_img)
+iris_code_1 = extract_features(unwrapped_img)
 
 file_path_2 = filedialog.askopenfilename()
 img_2 = cv2.imread(file_path_2, 0)
@@ -40,7 +40,7 @@ segmented_img = segment_iris(
 unwrapped_img = unwrap_iris(
     segmented_img, inner_center, inner_radius, outer_center, outer_radius)
 
-iris_code_2 = extractFeature(unwrapped_img)
+iris_code_2 = extract_features(unwrapped_img)
 
 iris_code_1 = np.asarray(iris_code_1, dtype=np.float32)
 iris_code_2 = np.asarray(iris_code_2, dtype=np.float32)

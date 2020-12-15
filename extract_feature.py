@@ -2,7 +2,8 @@ import cv2
 import numpy as np
 
 
-def extractFeature(img):
+def extract_features(img):
+    img = cv2.equalizeHist(img)
 
     ksize = [10, 15, 25]
     sigma = 5
@@ -19,14 +20,13 @@ def extractFeature(img):
         for _theta in theta:
             kern = cv2.getGaborKernel((_ksize, _ksize), sigma,
                                       _theta, _lambda, gamma, psi, ktype)
-            kern /= 1.5*kern.sum()
+            kern /= 1.5 * kern.sum()
             fimg = cv2.filter2D(img, cv2.CV_8UC3, kern)
             filtered_images.append(fimg)
 
     for img_idx in range(8):
         for sub_img_idx in range(8):
-            sub_img = filtered_images[img_idx][:, 64 *
-                                               sub_img_idx: 64 * (sub_img_idx + 1)]
+            sub_img = filtered_images[img_idx][:, 64 * sub_img_idx: 64 * (sub_img_idx + 1)]
             mean = np.mean(sub_img)
             aad = 1 / (64.0 * 64.0) * np.sum(np.absolute(sub_img - mean))
             code.append(aad)

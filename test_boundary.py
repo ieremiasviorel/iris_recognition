@@ -1,20 +1,23 @@
-import sys
-import numpy as np
-from math import floor
-from cv2 import bitwise_and, imread, imshow, circle, waitKey, destroyAllWindows, logPolar, WARP_FILL_OUTLIERS
+import cv2
 
-from boundary import find_iris_inner_bound, find_iris_outer_bound
+import boundary
 
-img_filename = sys.argv[1]
-img = imread(img_filename, 0)
+img_filename = "sample1.jpg"
+img = cv2.imread(img_filename, 0)
 
-inner_center, inner_radius = find_iris_inner_bound(img)
-outer_center, outer_radius = find_iris_outer_bound(img, inner_center, inner_radius)
+inner_center, inner_radius = boundary.find_iris_inner_bound(img)
+outer_center, outer_radius = boundary.find_iris_outer_bound(img, inner_center, inner_radius)
+eyelids = boundary.find_eyelids(img)
 
-circle(img, inner_center, inner_radius, (255, 255, 255), 1)
-circle(img, outer_center, outer_radius, (255, 255, 255), 1)
+cv2.circle(img, outer_center, outer_radius, (255, 255, 255), 1)
+cv2.circle(img, inner_center, inner_radius, (255, 255, 255), 1)
+for eyelid in eyelids:
+    cv2.circle(img, (eyelid[0], eyelid[1]), eyelid[2], (255, 255, 255), 1)
 
-imshow("boundary image", img)
+cv2.imshow("boundary image", img)
 
-waitKey(0)
-destroyAllWindows()
+print(inner_center, inner_radius)
+print(outer_center, outer_radius)
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()

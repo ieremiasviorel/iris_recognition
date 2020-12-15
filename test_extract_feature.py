@@ -1,47 +1,46 @@
-import sys
 import cv2
 import numpy as np
 
-from boundary import find_iris_inner_bound, find_iris_outer_bound
-from segment import segment_iris
-from unwrap import unwrap_iris
-from extract_feature import extractFeature
+import boundary
+import extract_feature
+import segment
+import unwrap
 
-img_filename = sys.argv[1]
-img = cv2.imread(img_filename, 0)
+image_names = [
+    "CASIA1/9/009_2_1.jpg",
+    "CASIA1/9/009_2_3.jpg",
+    "CASIA1/9/009_2_4.jpg",
+    "CASIA1/9/009_1_1.jpg"
+]
 
-inner_center, inner_radius = find_iris_inner_bound(img)
-outer_center, outer_radius = find_iris_outer_bound(
-    img, inner_center, inner_radius)
+unwrapped_images = []
 
-segmented_img = segment_iris(
-    img, inner_center, inner_radius, outer_center, outer_radius)
+for image_name in image_names:
+    print("UNWRAP IMAGE: " + image_name)
+    img = cv2.imread(image_name, 0)
+    inner_center, inner_radius = boundary.find_iris_inner_bound(img)
+    outer_center, outer_radius = boundary.find_iris_outer_bound(img, inner_center, inner_radius)
+    eyelids = boundary.find_eyelids(img)
 
-unwrapped_img = unwrap_iris(
-    segmented_img, inner_center, inner_radius, outer_center, outer_radius)
+    segmented_img = segment.segment_iris(img, inner_center, inner_radius, outer_center, outer_radius, eyelids)
 
-cv2.circle(img, inner_center, inner_radius, (255, 255, 255), 1)
-cv2.circle(img, outer_center, outer_radius, (255, 255, 255), 1)
+    unwrapped_img = unwrap.unwrap_iris(segmented_img, inner_center, inner_radius, outer_center, outer_radius)
 
-#cv2.imshow("original image", img)
-#cv2.imshow("segmented_image", segmented_img)
-cv2.imshow("unwrapped_image", unwrapped_img)
+    unwrapped_images.append(unwrapped_img)
 
-iris_code = extractFeature(unwrapped_img)
-print(iris_code)
+codes = []
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+for unwrapped_image in unwrapped_images:
+    print("COMPUTE CODE")
+    code = extract_feature.extract_features(unwrapped_image)
+    codes.append(np.asarray(code, dtype=np.float32))
 
-code_1 = np.asarray(extractFeature(cv2.imread('009_2_1.jpg')), dtype=np.float32)
-code_2 = np.asarray(extractFeature(cv2.imread('009_2_3.jpg')), dtype=np.float32)
-code_3 = np.asarray(extractFeature(cv2.imread('009_2_4.jpg')), dtype=np.float32)
-code_4 = np.asarray(extractFeature(cv2.imread('test2.jpg')), dtype=np.float32)
+print(str(len(codes)))
 
-print(np.linalg.norm(code_1 - code_2))
-print(np.linalg.norm(code_1 - code_3))
-print(np.linalg.norm(code_2 - code_3))
+print(np.linalg.norm(codes[0] - codes[1]))
+print(np.linalg.norm(codes[0] - codes[2]))
+print(np.linalg.norm(codes[1] - codes[2]))
 
-print(np.linalg.norm(code_1 - code_4))
-print(np.linalg.norm(code_2 - code_4))
-print(np.linalg.norm(code_3 - code_4))
+print(np.linalg.norm(codes[0] - codes[3]))
+print(np.linalg.norm(codes[1] - codes[3]))
+print(np.linalg.norm(codes[2] - codes[3]))
