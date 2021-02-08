@@ -2,6 +2,7 @@ __pycache__
 .vscode
 .idea
 iris_codes
+results
 env
 venv
 *.jpg

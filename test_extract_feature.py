@@ -32,7 +32,7 @@ codes = []
 
 for unwrapped_image in unwrapped_images:
     print("COMPUTE CODE")
-    code = extract_feature.extract_features(unwrapped_image)
+    _, code = extract_feature.extract_features(unwrapped_image)
     codes.append(np.asarray(code, dtype=np.float32))
 
 print(str(len(codes)))

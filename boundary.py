@@ -76,7 +76,7 @@ def find_iris_outer_bound(img, inner_center, inner_radius):
     """
     height, width = img.shape
     start_radius = int(inner_radius + width / 10)
-    end_radius = int(width / 3 + 20)
+    end_radius = int(width / 3 + 30)
     coord_range_x = range(int(inner_center[0] - 10), int(inner_center[0] + 10), 4)
     coord_range_y = range(int(inner_center[1] - 10), int(inner_center[1] + 10), 4)
     all_points = list(itertools.product(coord_range_x, coord_range_y))

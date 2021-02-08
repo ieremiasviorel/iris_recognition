@@ -29,7 +29,7 @@ def get_image_iris_code(img_filename):
 
     unwrapped_img = unwrap.unwrap_iris(segmented_img, inner_center, inner_radius, outer_center, outer_radius)
 
-    iris_code = extract_feature.extract_features(unwrapped_img)
+    _, iris_code = extract_feature.extract_features(unwrapped_img)
 
     return np.asarray(iris_code, dtype=np.float32)
 
@@ -46,20 +46,6 @@ def compute_and_save_iris_code(subject_index):
     pickle.dump(iris_codes, f)
     f.close()
 
-
-"""
-for subject_index in range(1, 109):
-    print("SUBJECT: " + str(subject_index))
-    iris_codes = []
-    for sample_index in range(1, 8):
-        print("SAMPLE: " + str(subject_index) + "/" + str(sample_index))
-        img_filename = get_image_filename(subject_index, sample_index)
-        iris_code = get_image_iris_code(img_filename)
-        iris_codes.append(iris_code)
-    f = open("iris_codes/" + str(subject_index).zfill(3) + ".pkl", "wb")
-    pickle.dump(iris_codes, f)
-    f.close()
-"""
 
 if __name__ == '__main__':
     pool = multiprocessing.Pool(16)

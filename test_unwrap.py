@@ -20,7 +20,7 @@ cv2.circle(img, outer_center, outer_radius, (255, 255, 255), 1)
 for eyelid in eyelids:
     cv2.circle(img, (eyelid[0], eyelid[1]), eyelid[2], (255, 255, 255), 1)
 
-cv2.imwrite("sample4.unwrap.jpg", unwrapped_img)
+cv2.imwrite("results/sample4.unwrap.jpg", unwrapped_img)
 
 cv2.imshow("original image", img)
 cv2.imshow("segmented_image", segmented_img)
